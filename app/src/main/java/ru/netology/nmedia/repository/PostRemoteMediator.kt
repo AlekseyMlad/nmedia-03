@@ -33,7 +33,7 @@ class PostRemoteMediator(
                     if (id == null) {
                         service.getLatest(state.config.initialLoadSize)
                     } else {
-                        service.getNewer(id)
+                        service.getAfter(id, state.config.pageSize)
                     }
                 }
                 LoadType.PREPEND -> {

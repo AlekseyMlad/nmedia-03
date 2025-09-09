@@ -37,16 +37,6 @@ class PostRepositoryImpl @Inject constructor(
     private val appAuth: AppAuth,
 ) : PostRepository {
 
-    private val repositoryScope = CoroutineScope(Dispatchers.Default)
-
-    init {
-        repositoryScope.launch {
-            appAuth.authStateFlow.collect {
-                postDao.removeAll()
-            }
-        }
-    }
-
     @OptIn(ExperimentalPagingApi::class)
     override val data: Flow<PagingData<Post>> = Pager(
         config = PagingConfig(pageSize = 25),
@@ -54,6 +44,11 @@ class PostRepositoryImpl @Inject constructor(
         pagingSourceFactory = postDao::pagingSource,
     ).flow.map { pagingData ->
         pagingData.map(PostEntity::toDto)
+    }
+
+    override suspend fun clearAllData() {
+        postDao.removeAll()
+        postRemoteKeyDao.removeAll()
     }
 
     override suspend fun getAll() {
@@ -135,10 +130,5 @@ class PostRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             throw UnknownError
         }
-    }
-
-    override suspend fun clearAndSave(posts: List<Post>) {
-        postDao.removeAll()
-        postDao.insert(posts.toEntity())
     }
 }
