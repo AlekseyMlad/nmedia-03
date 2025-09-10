@@ -25,14 +25,12 @@ import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 import ru.netology.nmedia.auth.AppAuth
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @Singleton
 class PostRepositoryImpl @Inject constructor(
     appDb: AppDb,
     private val postDao: PostDao,
-    postRemoteKeyDao: PostRemoteKeyDao,
+    private val postRemoteKeyDao: PostRemoteKeyDao,
     private val apiService: ApiService,
     private val appAuth: AppAuth,
 ) : PostRepository {

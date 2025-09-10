@@ -68,41 +68,25 @@ class FeedFragment : Fragment() {
         })
         binding.list.adapter = adapter
 
-        // Устаревший вариант
-        /*
-        lifecycleScope.launchWhenCreated {
-            viewModel.data.collectLatest(adapter::submitData)
-        }
-         */
 
-        // Актуальный вариант
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.data.collectLatest(adapter::submitData)
             }
         }
 
-        // Устаревший вариант
-        /*
-        lifecycleScope.launchWhenCreated {
-            adapter.loadStateFlow.collectLatest { state ->
-                binding.swiperefresh.isRefreshing =
-                    state.refresh is LoadState.Loading ||
-                    state.prepend is LoadState.Loading ||
-                    state.append is LoadState.Loading
-            }
-        }
-         */
 
-        // Актуальный вариант
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                adapter.loadStateFlow.collectLatest { state ->
-                    binding.swiperefresh.isRefreshing =
-                        state.refresh is LoadState.Loading ||
-                                state.prepend is LoadState.Loading ||
-                                state.append is LoadState.Loading
+                auth.authStateFlow.collect {
+                    adapter.refresh()
                 }
+//                adapter.loadStateFlow.collectLatest { state ->
+//                    binding.swiperefresh.isRefreshing =
+//                        state.refresh is LoadState.Loading ||
+//                                state.prepend is LoadState.Loading ||
+//                                state.append is LoadState.Loading
+//                }
             }
         }
 
